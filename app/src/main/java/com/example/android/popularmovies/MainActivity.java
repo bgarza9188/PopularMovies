@@ -19,6 +19,10 @@ import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -125,6 +129,44 @@ public class MainActivity extends AppCompatActivity {
 
         private final String LOG_TAG = FetchPopularMovieTask.class.getSimpleName();
 
+        /**
+         * Take the String representing the complete Movie list in JSON Format and
+         * pull out the data we need to construct the Strings needed for the wireframes.
+         *
+         * The constructor takes the JSON string and converts it into an Object hierarchy.
+         */
+        private String[] getMovieDataFromJson(String movieJsonStr)
+                throws JSONException {
+
+            // These are the names of the JSON objects that need to be extracted.
+            final String RESULTS = "results";
+            final String POSTER_PATH = "poster_path";
+            final String MOVIE_ID = "id";
+
+            String[] resultStrings = null;
+            JSONObject movieJson = new JSONObject(movieJsonStr);
+            JSONArray movieArray = movieJson.getJSONArray(RESULTS);
+
+
+            for(int i = 0; i < movieArray.length(); i++) {
+
+                JSONObject movie = movieArray.getJSONObject(i);
+                Log.i("movie", movie.toString());
+
+                Integer movieID = movie.getInt(MOVIE_ID);
+                Log.i("movie id", movieID.toString());
+
+                String poster = movie.getString(POSTER_PATH);
+                Log.i("poster", poster);
+
+
+                //resultStrings[i] = movie.toString();
+
+            }
+
+            return resultStrings;
+
+        }
 
         @Override
         protected String[] doInBackground(String... params) {
@@ -132,6 +174,8 @@ public class MainActivity extends AppCompatActivity {
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
             StringBuffer buffer;
+            // Will contain the raw JSON response as a string.
+            String movieJsonStr = null;
             try {
                 // Construct the URL for the MovieDB query
                 final String POPULAR_MOVIE_BASE_URL =
@@ -161,20 +205,19 @@ public class MainActivity extends AppCompatActivity {
 
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                    // But it does make debugging a *lot* easier if you print out the completed
-                    // buffer for debugging.
+                    //Put newline at end of each line in JSON results
                     buffer.append(line + "\n");
                 }
 
                 if (buffer.length() == 0) {
                     // Stream was empty.  No point in parsing.
+                    Log.i(LOG_TAG, "Stream was empty, returning null");
                     return null;
                 }
-                Log.i("printing Buffer:", buffer.toString());
+                movieJsonStr = buffer.toString();
             } catch (IOException e) {
                 Log.e("error", "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attemping
+                // If the code didn't successfully get the movie data, there's no point in attempting
                 // to parse it.
                 return null;
             } finally {
@@ -188,6 +231,14 @@ public class MainActivity extends AppCompatActivity {
                         Log.e("error", "Error closing stream", e);
                     }
                 }
+            }
+
+            try {
+                Log.i(LOG_TAG, movieJsonStr);
+                return getMovieDataFromJson(movieJsonStr);
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, e.getMessage(), e);
+                e.printStackTrace();
             }
             return null;
         }
