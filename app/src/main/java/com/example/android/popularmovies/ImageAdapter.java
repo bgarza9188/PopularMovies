@@ -10,6 +10,10 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,21 +24,22 @@ public class ImageAdapter extends BaseAdapter {
     private Context mContext;
     private final String LOG_TAG = ImageAdapter.class.getSimpleName();
 
-    private List<String> movieInputs;
+    protected List<String> movieInputs;
 
     public ImageAdapter(Context c) {
         mContext = c;
+        movieInputs = new ArrayList<>();
     }
-
     public int getCount() {
         Log.e(LOG_TAG, "getCount");
         if(movieInputs == null)
-            return 10;
+            return 0;
+        Log.e(LOG_TAG, "getCount, Size Value: " + movieInputs.size());
         return movieInputs.size();
     }
 
     public Object getItem(int position) {
-        return null;
+        return movieInputs.get(position);
     }
 
     public long getItemId(int position) {
@@ -53,11 +58,24 @@ public class ImageAdapter extends BaseAdapter {
         } else {
             imageView = (ImageView) convertView;
         }
-        //todo need to set this to the new List created
-        String defaultImageUri = "http://image.tmdb.org/t/p/w500//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg";
+
+        String defaultImageUri = "http://image.tmdb.org/t/p/w500/";
+        defaultImageUri += getMoviePosterURL(movieInputs.get(position));
         Picasso.with(mContext).load(defaultImageUri).fit().into(imageView);
         //imageView.setImageResource(mThumbIds[position]);
         return imageView;
+    }
+
+    private String getMoviePosterURL(String movie) {
+        try {
+            JSONObject movieJson = new JSONObject(movie);
+            Log.i(LOG_TAG,"POSTER!!! : " + movieJson.getString("poster_path"));
+            String poster = movieJson.getString("poster_path");
+            return poster;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public void clear(){

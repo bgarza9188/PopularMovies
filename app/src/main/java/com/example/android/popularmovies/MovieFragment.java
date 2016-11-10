@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -55,6 +54,7 @@ public class MovieFragment extends Fragment {
                              Bundle savedInstanceState) {
         Log.i(LOG_TAG, "onCreateView");
 
+
         mMovieAdapter = new ImageAdapter(getActivity());
 
         View rootView = inflater.inflate(R.layout.fragment_movie, container, false);
@@ -65,13 +65,27 @@ public class MovieFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
-                Toast.makeText(getActivity(), position,
-                        Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getActivity(), position,
+//                        Toast.LENGTH_SHORT).show();
+                Log.i(LOG_TAG, "position:" + String.valueOf(position));
+                Log.i(LOG_TAG, "movie clicked:" + mMovieAdapter.getItem(position));
             }
         });
 
 
         return rootView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.i(LOG_TAG,"onStart");
+        updateMovies("top_rated");
+    }
+
+    private void updateMovies(String param) {
+        FetchPopularMovieTask task = new FetchPopularMovieTask();
+        task.execute(param);
     }
 
     @Override
@@ -84,14 +98,12 @@ public class MovieFragment extends Fragment {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_sort_highest_rated) {
             Log.e(LOG_TAG, "top rated was pressed");
-            FetchPopularMovieTask task = new FetchPopularMovieTask();
-            task.execute("top_rated");
+            updateMovies("top_rated");
             return true;
         }
         else if (id == R.id.action_sort_most_popular) {
             Log.e(LOG_TAG, "most pop was pressed");
-            FetchPopularMovieTask task = new FetchPopularMovieTask();
-            task.execute("popular");
+            updateMovies("popular");
             return true;
         }
 
@@ -127,18 +139,19 @@ public class MovieFragment extends Fragment {
                     JSONObject movie = movieArray.getJSONObject(i);
                     Log.i("movie", movie.toString());
 
-                    movieID = movie.getInt(MOVIE_ID);
-                    Log.i("movie id", movieID.toString());
+//                    movieID = movie.getInt(MOVIE_ID);
+//                    Log.i("movie id", movieID.toString());
 
-                    resultStrings[i] = movieID.toString();
+                    resultStrings[i] = movie.toString();
                 }
                 return resultStrings;
             } catch (JSONException e) {
                 Log.e(LOG_TAG, "No result set, returning with one movie.");
-                movieID = movieJson.getInt(MOVIE_ID);
-                Log.e(LOG_TAG, movieID.toString());
+//                movieID = movieJson.getInt(MOVIE_ID);
+//                Log.e(LOG_TAG, movieID.toString());
                 resultStrings = new String[1];
-                resultStrings[0] = movieID.toString();
+//                resultStrings[0] = movieID.toString();
+                resultStrings[0] = movieJson.toString();
                 return resultStrings;
             }
         }
@@ -233,6 +246,7 @@ public class MovieFragment extends Fragment {
                 for(int i = 0; i < result.length; i++){
                     mMovieAdapter.add(i, result[i]);
                 }
+                mMovieAdapter.notifyDataSetChanged();
                 // New data is back from the server.  Hooray!
             }
         }
