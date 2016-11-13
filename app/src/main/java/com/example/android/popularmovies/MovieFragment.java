@@ -99,7 +99,6 @@ public class MovieFragment extends Fragment {
                     Toast.LENGTH_LONG).show();
             updateMovies(lastSelection);
         }
-
     }
 
     private void updateMovies(String param) {
