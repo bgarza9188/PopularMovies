@@ -2,4 +2,7 @@
     <string name="app_name">PopularMovies</string>
     <string name="action_sort_most_popular">Most Popular</string>
     <string name="action_sort_highest_rated">Highest Rated</string>
+    <string name="toast_onStart_guide">Please use the options menu to switch between movie lists.</string>
+    <string name="loading_most_popular">Loading... Most Popular Movies</string>
+    <string name="loading_highest_rated">Loading... Highest Rated Movies</string>
 </resources>

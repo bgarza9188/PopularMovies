@@ -1,5 +1,6 @@
 package com.example.android.popularmovies;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,6 +32,10 @@ public class MovieFragment extends Fragment {
     private final String LOG_TAG = MovieFragment.class.getSimpleName();
 
     private ImageAdapter mMovieAdapter;
+
+    private final String TOP_RATED = "top_rated";
+    private final String MOST_POP = "popular";
+    private String lastSelection;
 
     public MovieFragment() {
         // Required empty public constructor
@@ -69,6 +75,9 @@ public class MovieFragment extends Fragment {
 //                        Toast.LENGTH_SHORT).show();
                 Log.i(LOG_TAG, "position:" + String.valueOf(position));
                 Log.i(LOG_TAG, "movie clicked:" + mMovieAdapter.getItem(position));
+                Intent intent = new Intent(getActivity(), DetailActivity.class)
+                        .putExtra(Intent.EXTRA_TEXT, mMovieAdapter.getItem(position).toString());
+                startActivity(intent);
             }
         });
 
@@ -80,7 +89,17 @@ public class MovieFragment extends Fragment {
     public void onStart() {
         super.onStart();
         Log.i(LOG_TAG,"onStart");
-        updateMovies("top_rated");
+        if(lastSelection == null) {
+            updateMovies(MOST_POP);
+            Toast.makeText(getActivity(), R.string.loading_most_popular,
+                    Toast.LENGTH_LONG).show();
+        }
+        else{
+            Toast.makeText(getActivity(), R.string.loading_highest_rated,
+                    Toast.LENGTH_LONG).show();
+            updateMovies(lastSelection);
+        }
+
     }
 
     private void updateMovies(String param) {
@@ -97,13 +116,19 @@ public class MovieFragment extends Fragment {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_sort_highest_rated) {
-            Log.e(LOG_TAG, "top rated was pressed");
-            updateMovies("top_rated");
+            Log.i(LOG_TAG, "top rated was pressed");
+            lastSelection = TOP_RATED;
+            Toast.makeText(getActivity(), R.string.loading_highest_rated,
+                    Toast.LENGTH_LONG).show();
+            updateMovies(TOP_RATED);
             return true;
         }
         else if (id == R.id.action_sort_most_popular) {
-            Log.e(LOG_TAG, "most pop was pressed");
-            updateMovies("popular");
+            Log.i(LOG_TAG, "most pop was pressed");
+            lastSelection = MOST_POP;
+            Toast.makeText(getActivity(), R.string.loading_most_popular,
+                    Toast.LENGTH_LONG).show();
+            updateMovies(MOST_POP);
             return true;
         }
 
@@ -116,44 +141,27 @@ public class MovieFragment extends Fragment {
 
         /**
          * Take the String representing the complete Movie list in JSON Format and
-         * pull out the data we need to construct the Strings needed for the wireframes.
+         * pull out the data we need.
          *
          * The constructor takes the JSON string and converts it into an Object hierarchy.
          */
         private String[] getMovieDataFromJson(String movieJsonStr)
                 throws JSONException {
 
+            String[] resultStrings;
             // These are the names of the JSON objects that need to be extracted.
             final String RESULTS = "results";
-            final String MOVIE_ID = "id";
-            String[] resultStrings;
-            Integer movieID;
 
             JSONObject movieJson = new JSONObject(movieJsonStr);
-            try {
-                JSONArray movieArray;
-                movieArray = movieJson.getJSONArray(RESULTS);
-                resultStrings = new String[movieArray.length()];
+            JSONArray movieArray = movieJson.getJSONArray(RESULTS);
+            resultStrings = new String[movieArray.length()];
 
-                for(int i = 0; i < movieArray.length(); i++) {
-                    JSONObject movie = movieArray.getJSONObject(i);
-                    Log.i("movie", movie.toString());
-
-//                    movieID = movie.getInt(MOVIE_ID);
-//                    Log.i("movie id", movieID.toString());
-
-                    resultStrings[i] = movie.toString();
-                }
-                return resultStrings;
-            } catch (JSONException e) {
-                Log.e(LOG_TAG, "No result set, returning with one movie.");
-//                movieID = movieJson.getInt(MOVIE_ID);
-//                Log.e(LOG_TAG, movieID.toString());
-                resultStrings = new String[1];
-//                resultStrings[0] = movieID.toString();
-                resultStrings[0] = movieJson.toString();
-                return resultStrings;
+            for(int i = 0; i < movieArray.length(); i++) {
+                JSONObject movie = movieArray.getJSONObject(i);
+                resultStrings[i] = movie.toString();
             }
+
+            return resultStrings;
         }
 
         @Override
@@ -161,8 +169,6 @@ public class MovieFragment extends Fragment {
 
             if(params.length == 0)
                 return null;
-
-            Log.i("PARAMS:", params[0]);
 
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
@@ -242,7 +248,7 @@ public class MovieFragment extends Fragment {
         protected void onPostExecute(String[] result) {
             if (result != null) {
                 mMovieAdapter.clear();
-                Log.e(LOG_TAG, "Updating Adapter");
+                Log.i(LOG_TAG, "Updating Adapter");
                 for(int i = 0; i < result.length; i++){
                     mMovieAdapter.add(i, result[i]);
                 }

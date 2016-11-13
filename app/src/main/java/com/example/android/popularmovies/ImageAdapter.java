@@ -1,7 +1,6 @@
 package com.example.android.popularmovies;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -31,10 +30,8 @@ public class ImageAdapter extends BaseAdapter {
         movieInputs = new ArrayList<>();
     }
     public int getCount() {
-        Log.e(LOG_TAG, "getCount");
         if(movieInputs == null)
             return 0;
-        Log.e(LOG_TAG, "getCount, Size Value: " + movieInputs.size());
         return movieInputs.size();
     }
 
@@ -48,7 +45,6 @@ public class ImageAdapter extends BaseAdapter {
 
     // create a new ImageView for each item referenced by the Adapter
     public View getView(int position, View convertView, ViewGroup parent) {
-        Log.e(LOG_TAG, "getView");
         ImageView imageView;
         if (convertView == null) {
             // if it's not recycled, initialize some attributes
@@ -59,17 +55,15 @@ public class ImageAdapter extends BaseAdapter {
             imageView = (ImageView) convertView;
         }
 
-        String defaultImageUri = "http://image.tmdb.org/t/p/w500/";
+        String defaultImageUri = "http://image.tmdb.org/t/p/w500";
         defaultImageUri += getMoviePosterURL(movieInputs.get(position));
         Picasso.with(mContext).load(defaultImageUri).fit().into(imageView);
-        //imageView.setImageResource(mThumbIds[position]);
         return imageView;
     }
 
-    private String getMoviePosterURL(String movie) {
+    protected String getMoviePosterURL(String movie) {
         try {
             JSONObject movieJson = new JSONObject(movie);
-            Log.i(LOG_TAG,"POSTER!!! : " + movieJson.getString("poster_path"));
             String poster = movieJson.getString("poster_path");
             return poster;
         } catch (JSONException e) {
@@ -87,14 +81,4 @@ public class ImageAdapter extends BaseAdapter {
         if(movieInputs != null)
             movieInputs.add(index, input);
     }
-
-    // references to our images
-    private Integer[] mThumbIds = {
-            R.drawable.common_google_signin_btn_icon_dark,
-            R.drawable.common_google_signin_btn_icon_dark,
-            R.drawable.common_google_signin_btn_icon_dark,
-            R.drawable.common_google_signin_btn_icon_dark
-    };
-
-
 }
