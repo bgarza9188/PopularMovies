@@ -5,4 +5,5 @@
     <string name="toast_onStart_guide">Please use the options menu to switch between movie lists.</string>
     <string name="loading_most_popular">Loading... Most Popular Movies</string>
     <string name="loading_highest_rated">Loading... Highest Rated Movies</string>
+    <string name="result_is_null">Something went wrong, please check your internet connection and try again!</string>
 </resources>

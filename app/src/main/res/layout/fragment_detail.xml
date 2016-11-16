@@ -1,30 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
+    android:fillViewport="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/fragment_detail"
     tools:context="com.example.android.popularmovies.DetailActivity.DetailFragment"
     tools:showIn="@layout/activity_detail">
 
-    <ImageView
-        android:id="@+id/detail_image_view"
-        android:layout_marginTop="58dp"
-        android:layout_centerHorizontal="true"
-        android:layout_height="750px"
-        android:layout_width="500px" />
-
-    <ScrollView
+    <RelativeLayout xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/fragment_detail"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="325dp">
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/detail_image_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:adjustViewBounds="true" />
+
         <TextView
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:id="@+id/detail_text"/>
-    </ScrollView>
+            android:id="@+id/detail_text"
+            android:layout_below="@+id/detail_image_view"/>
+    </RelativeLayout>
 
-
-</RelativeLayout>
+</ScrollView>
