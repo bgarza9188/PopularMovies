@@ -57,7 +57,7 @@ public class ImageAdapter extends BaseAdapter {
 
         String defaultImageUri = "http://image.tmdb.org/t/p/w500";
         defaultImageUri += getMoviePosterURL(movieInputs.get(position));
-        Picasso.with(mContext).load(defaultImageUri).fit().into(imageView);
+        Picasso.with(mContext).load(defaultImageUri).into(imageView);
         return imageView;
     }
 

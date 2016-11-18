@@ -8,7 +8,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:numColumns="auto_fit"
-        android:verticalSpacing="9dp"
+        android:verticalSpacing="2dp"
+        android:horizontalSpacing="2dp"
         android:gravity="start"
         android:id="@+id/movie_grid_view">
     </GridView>
