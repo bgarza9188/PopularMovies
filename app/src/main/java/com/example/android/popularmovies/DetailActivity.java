@@ -36,6 +36,7 @@ public class DetailActivity extends AppCompatActivity{
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // handle arrow click here
@@ -45,10 +46,11 @@ public class DetailActivity extends AppCompatActivity{
 
         return super.onOptionsItemSelected(item);
     }
+
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class DetailFragment extends Fragment {
+    public static class DetailFragment extends Fragment  implements OnTaskCompleted{
 
         private static final String LOG_TAG = DetailFragment.class.getSimpleName();
 
@@ -79,7 +81,7 @@ public class DetailActivity extends AppCompatActivity{
                     releaseDate = movieJson.getString("release_date");
                     voteAverage = movieJson.getString("vote_average");
                     plot = movieJson.getString("overview");
-
+                    getReviews(movieJson.getString("id"));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -96,6 +98,16 @@ public class DetailActivity extends AppCompatActivity{
                 Picasso.with(getContext()).load(defaultImageUri).into(imageView);
             }
             return rootView;
+        }
+
+        private void getReviews(String param) {
+            FetchMovieReviewTask task = new FetchMovieReviewTask();
+            task.listener=this;
+            task.execute(param);
+        }
+
+        @Override
+        public void onTaskCompleted(String[] result) {
         }
     }
 }

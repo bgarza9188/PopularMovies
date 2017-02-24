@@ -19,7 +19,6 @@ public class MovieFragment extends Fragment implements OnTaskCompleted{
     private final String LOG_TAG = MovieFragment.class.getSimpleName();
 
     private ImageAdapter mMovieAdapter;
-
     private final String TOP_RATED = "top_rated";
     private final String MOST_POP = "popular";
     private String lastSelection;
@@ -31,6 +30,7 @@ public class MovieFragment extends Fragment implements OnTaskCompleted{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setHasOptionsMenu(true);
         Log.i(LOG_TAG, "onCreate");
     }
@@ -47,13 +47,11 @@ public class MovieFragment extends Fragment implements OnTaskCompleted{
                              Bundle savedInstanceState) {
         Log.i(LOG_TAG, "onCreateView");
 
-
-        mMovieAdapter = new ImageAdapter(getActivity());
-
         View rootView = inflater.inflate(R.layout.fragment_movie, container, false);
-
         // Get a reference to the GridView, and attach this adapter to it.
         GridView gridView = (GridView) rootView.findViewById(R.id.movie_grid_view);
+        mMovieAdapter = new ImageAdapter(getActivity());
+
         gridView.setAdapter(mMovieAdapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
@@ -116,6 +114,18 @@ public class MovieFragment extends Fragment implements OnTaskCompleted{
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState){
+        super.onSaveInstanceState(savedInstanceState);
+        Log.e(LOG_TAG,"onSaveInstanceState");
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        Log.e(LOG_TAG,"onStop");
     }
 
     @Override
