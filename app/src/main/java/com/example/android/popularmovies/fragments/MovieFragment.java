@@ -1,4 +1,4 @@
-package com.example.android.popularmovies;
+package com.example.android.popularmovies.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,14 +14,22 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
-public class MovieFragment extends Fragment implements OnTaskCompleted{
+import com.example.android.popularmovies.OnTaskCompleted;
+import com.example.android.popularmovies.R;
+import com.example.android.popularmovies.activities.DetailActivity;
+import com.example.android.popularmovies.adapters.ImageAdapter;
+import com.example.android.popularmovies.tasks.FetchPopularMovieTask;
 
+public class MovieFragment extends Fragment implements OnTaskCompleted {
+
+    private static final String VIEW_STATE_KEY = "view_state_key";
     private final String LOG_TAG = MovieFragment.class.getSimpleName();
 
     private ImageAdapter mMovieAdapter;
     private final String TOP_RATED = "top_rated";
     private final String MOST_POP = "popular";
-    private String lastSelection;
+    private final String FAVORITE = "favorite";
+    private String mLastSelection;
 
     public MovieFragment() {
         // Required empty public constructor
@@ -30,6 +38,9 @@ public class MovieFragment extends Fragment implements OnTaskCompleted{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            mLastSelection = savedInstanceState.getString(VIEW_STATE_KEY);
+        }
 
         setHasOptionsMenu(true);
         Log.i(LOG_TAG, "onCreate");
@@ -71,15 +82,19 @@ public class MovieFragment extends Fragment implements OnTaskCompleted{
     @Override
     public void onStart() {
         super.onStart();
-        Log.i(LOG_TAG, "onStart");
-        if (lastSelection == null) {
-            updateMovies(MOST_POP);
+        Log.i(LOG_TAG, "onStart, mLastSelection >>> " + mLastSelection);
+        if (mLastSelection == null || mLastSelection == MOST_POP) {
+            //When the app first launches, mLastSelection will be null.
             Toast.makeText(getActivity(), R.string.loading_most_popular,
-                    Toast.LENGTH_LONG).show();
-        } else {
+                    Toast.LENGTH_SHORT).show();
+            updateMovies(MOST_POP);
+        } else if (mLastSelection == FAVORITE) {
+            //TODO ping DB here
+            Log.e(LOG_TAG, "pinging DB...");
+        } else if (mLastSelection == TOP_RATED){
             Toast.makeText(getActivity(), R.string.loading_highest_rated,
-                    Toast.LENGTH_LONG).show();
-            updateMovies(lastSelection);
+                    Toast.LENGTH_SHORT).show() ;
+            updateMovies(TOP_RATED);
         }
     }
 
@@ -96,20 +111,43 @@ public class MovieFragment extends Fragment implements OnTaskCompleted{
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_sort_highest_rated) {
             Log.i(LOG_TAG, "top rated was pressed");
-            lastSelection = TOP_RATED;
+            mLastSelection = TOP_RATED;
             Toast.makeText(getActivity(), R.string.loading_highest_rated,
-                    Toast.LENGTH_LONG).show();
+                    Toast.LENGTH_SHORT).show();
+            //remove favorite fragment if it's there
+            if(getActivity().getSupportFragmentManager().findFragmentByTag(FAVORITE) != null) {
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .remove(getActivity().getSupportFragmentManager().findFragmentByTag(FAVORITE))
+                        .commit();
+            }
             updateMovies(TOP_RATED);
             return true;
         } else if (id == R.id.action_sort_most_popular) {
             Log.i(LOG_TAG, "most pop was pressed");
-            lastSelection = MOST_POP;
+            mLastSelection = MOST_POP;
             Toast.makeText(getActivity(), R.string.loading_most_popular,
-                    Toast.LENGTH_LONG).show();
+                    Toast.LENGTH_SHORT).show();
+            //remove favorite fragment if it's there
+            if(getActivity().getSupportFragmentManager().findFragmentByTag(FAVORITE) != null) {
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .remove(getActivity().getSupportFragmentManager().findFragmentByTag(FAVORITE))
+                        .commit();
+            }
             updateMovies(MOST_POP);
+            return true;
+
+        } else if (id == R.id.action_show_favorites) {
+            mLastSelection = FAVORITE;
+            if(getActivity().getSupportFragmentManager().findFragmentByTag(FAVORITE) == null){
+                FavoriteFragment favoriteFragment = new FavoriteFragment();
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .add(R.id.content_main, favoriteFragment, FAVORITE)
+                        .commit();
+            }
+            mMovieAdapter.clear();
+            mMovieAdapter.notifyDataSetChanged();
             return true;
         }
 
@@ -118,6 +156,7 @@ public class MovieFragment extends Fragment implements OnTaskCompleted{
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState){
+        savedInstanceState.putString(VIEW_STATE_KEY, mLastSelection);
         super.onSaveInstanceState(savedInstanceState);
         Log.e(LOG_TAG,"onSaveInstanceState");
     }

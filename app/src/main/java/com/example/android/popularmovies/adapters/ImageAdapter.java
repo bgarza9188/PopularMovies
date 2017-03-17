@@ -1,4 +1,4 @@
-package com.example.android.popularmovies;
+package com.example.android.popularmovies.adapters;
 
 import android.content.Context;
 import android.view.View;
@@ -61,7 +61,7 @@ public class ImageAdapter extends BaseAdapter {
         return imageView;
     }
 
-    protected String getMoviePosterURL(String movie) {
+    public String getMoviePosterURL(String movie) {
         try {
             JSONObject movieJson = new JSONObject(movie);
             String poster = movieJson.getString("poster_path");

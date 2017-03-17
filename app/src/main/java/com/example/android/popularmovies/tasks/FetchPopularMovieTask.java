@@ -1,8 +1,11 @@
-package com.example.android.popularmovies;
+package com.example.android.popularmovies.tasks;
 
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.example.android.popularmovies.BuildConfig;
+import com.example.android.popularmovies.OnTaskCompleted;
 
 import org.json.JSONArray;
 import org.json.JSONException;

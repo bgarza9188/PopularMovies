@@ -2,14 +2,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.android.popularmovies.MovieFragment">
+    tools:context="com.example.android.popularmovies.fragments.MovieFragment">
 
     <GridView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:numColumns="auto_fit"
-        android:verticalSpacing="2dp"
-        android:horizontalSpacing="2dp"
         android:gravity="start"
         android:id="@+id/movie_grid_view">
     </GridView>

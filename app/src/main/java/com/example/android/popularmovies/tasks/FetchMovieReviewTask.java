@@ -1,8 +1,11 @@
-package com.example.android.popularmovies;
+package com.example.android.popularmovies.tasks;
 
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.example.android.popularmovies.BuildConfig;
+import com.example.android.popularmovies.OnTaskCompleted;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,10 +43,13 @@ public class FetchMovieReviewTask extends AsyncTask<String, Void, String[]> {
 
         JSONObject reviewJson = new JSONObject(movieJsonStr);
         JSONArray reviewArray = reviewJson.getJSONArray(RESULTS);
-        resultStrings = new String[reviewArray.length()];
+        int reviewArrayLength = reviewArray.length() + 1;
+        resultStrings = new String[reviewArrayLength];
+        //Use this to mark the array as Reviews
+        resultStrings[0] = "review";
 
-        for(int i = 0; i < reviewArray.length(); i++) {
-            JSONObject review = reviewArray.getJSONObject(i);
+        for(int i = 1; i < reviewArrayLength; i++) {
+            JSONObject review = reviewArray.getJSONObject(i-1);
             resultStrings[i] = review.toString();
         }
 
@@ -124,7 +130,6 @@ public class FetchMovieReviewTask extends AsyncTask<String, Void, String[]> {
         }
 
         try {
-            Log.i(LOG_TAG, movieReviewJsonStr);
             return getReviewDataFromJson(movieReviewJsonStr);
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
