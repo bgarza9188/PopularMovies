@@ -1,5 +1,6 @@
 package com.example.android.popularmovies.adapters;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.popularmovies.R;
+import com.example.android.popularmovies.data.MovieContract;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
@@ -30,7 +32,9 @@ public class MovieDetailAdapter extends BaseAdapter {
     private String releaseDate;
     private String voteAverage;
     private String plot;
+    private String movie_id;
     private String mMovieStr;
+    private Boolean favoriteFlag;
 
     public static class ViewHolder {
         public ImageView imageView;
@@ -75,7 +79,7 @@ public class MovieDetailAdapter extends BaseAdapter {
     // create a new ImageView for each item referenced by the Adapter
     public View getView(int position, View convertView, ViewGroup parent) {
         View view;
-        ViewHolder viewHolder;
+        final ViewHolder viewHolder;
         int layoutId;
         
         if (position == 0) {
@@ -91,16 +95,25 @@ public class MovieDetailAdapter extends BaseAdapter {
             viewHolder.releaseDateView.setText(releaseDate);
             viewHolder.voteAverageView.setText(voteAverage + "/10");
             viewHolder.plotView.setText(plot);
-            String defaultImageUri = "http://image.tmdb.org/t/p/w500";
             ImageAdapter imageAdapter = new ImageAdapter(mContext);
-            defaultImageUri += imageAdapter.getMoviePosterURL(mMovieStr);
-            Picasso.with(mContext).load(defaultImageUri).into(viewHolder.imageView);
+            String moviePosterURL = ImageAdapter.BASE_POSTER_IMAGE_URL + imageAdapter.getMoviePosterURL(mMovieStr);
+            Picasso.with(mContext).load(moviePosterURL).into(viewHolder.imageView);
+            if(favoriteFlag){
+                viewHolder.favoriteButton.setText("Unmark as Favorite.");
+            } else {
+                viewHolder.favoriteButton.setText("Mark as Favorite.");
+            }
             viewHolder.favoriteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //TODO Need to hook this up to the DB.
-                    Toast.makeText(mContext, R.string.marked_as_favorite,
-                            Toast.LENGTH_SHORT).show();
+                viewHolder.favoriteButton.setText("Marked as Favorite");
+                Toast.makeText(mContext, R.string.marked_as_favorite,
+                        Toast.LENGTH_SHORT).show();
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, movie_id);
+                contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_STRING, mMovieStr);
+                mContext.getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI,contentValues);
+                mContext.getContentResolver().notifyChange(MovieContract.MovieEntry.CONTENT_URI, null);
                 }
             });
         } else {
@@ -120,10 +133,11 @@ public class MovieDetailAdapter extends BaseAdapter {
             movieInputs.clear();
     }
 
-    public void add(int index, String input){
+    public void add(int index, String input, Boolean mIsFavorite){
         if(movieInputs != null) {
             if (index == 0) {
                 getMovieInfoFromIntent(input);
+                favoriteFlag = mIsFavorite;
             }
             movieInputs.add(index, input);
         }
@@ -137,6 +151,7 @@ public class MovieDetailAdapter extends BaseAdapter {
             releaseDate = movieJson.getString("release_date");
             voteAverage = movieJson.getString("vote_average");
             plot = movieJson.getString("overview");
+            movie_id = movieJson.getString("id");
         } catch (JSONException e) {
             e.printStackTrace();
         }

@@ -1,6 +1,7 @@
 package com.example.android.popularmovies.fragments;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -18,7 +19,11 @@ import com.example.android.popularmovies.OnTaskCompleted;
 import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.activities.DetailActivity;
 import com.example.android.popularmovies.adapters.ImageAdapter;
+import com.example.android.popularmovies.data.MovieContract;
 import com.example.android.popularmovies.tasks.FetchPopularMovieTask;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MovieFragment extends Fragment implements OnTaskCompleted {
 
@@ -69,8 +74,13 @@ public class MovieFragment extends Fragment implements OnTaskCompleted {
                                     int position, long id) {
                 Log.i(LOG_TAG, "position:" + String.valueOf(position));
                 Log.i(LOG_TAG, "movie clicked:" + mMovieAdapter.getItem(position));
+                String value = "false";
+                if(getFavoriteMovie(mMovieAdapter.getItem(position).toString()))
+                    value = "true";
+                Log.e(LOG_TAG,"value of value>>>" + value);
                 Intent intent = new Intent(getActivity(), DetailActivity.class)
-                        .putExtra(Intent.EXTRA_TEXT, mMovieAdapter.getItem(position).toString());
+                        .putExtra(Intent.EXTRA_TEXT, mMovieAdapter.getItem(position).toString())
+                        .putExtra("favorite_flag", value);
                 startActivity(intent);
             }
         });
@@ -89,8 +99,8 @@ public class MovieFragment extends Fragment implements OnTaskCompleted {
                     Toast.LENGTH_SHORT).show();
             updateMovies(MOST_POP);
         } else if (mLastSelection == FAVORITE) {
-            //TODO ping DB here
-            Log.e(LOG_TAG, "pinging DB...");
+            Toast.makeText(getActivity(), R.string.loading_favorites,
+                    Toast.LENGTH_SHORT).show();
         } else if (mLastSelection == TOP_RATED){
             Toast.makeText(getActivity(), R.string.loading_highest_rated,
                     Toast.LENGTH_SHORT).show() ;
@@ -140,6 +150,8 @@ public class MovieFragment extends Fragment implements OnTaskCompleted {
 
         } else if (id == R.id.action_show_favorites) {
             mLastSelection = FAVORITE;
+            Toast.makeText(getActivity(), R.string.loading_favorites,
+                    Toast.LENGTH_SHORT).show();
             if(getActivity().getSupportFragmentManager().findFragmentByTag(FAVORITE) == null){
                 FavoriteFragment favoriteFragment = new FavoriteFragment();
                 getActivity().getSupportFragmentManager().beginTransaction()
@@ -165,6 +177,33 @@ public class MovieFragment extends Fragment implements OnTaskCompleted {
     public void onStop(){
         super.onStop();
         Log.e(LOG_TAG,"onStop");
+    }
+
+    public Boolean getFavoriteMovie(String movieStringToCheck) {
+
+        String[] projection = {MovieContract.MovieEntry.COLUMN_MOVIE_ID};
+
+        String movie_id = "";
+        try {
+            JSONObject movieJson = new JSONObject(movieStringToCheck);
+            movie_id = "movie_id =" +movieJson.getString("id");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.e(LOG_TAG,"movie_id>>> " + movie_id);
+        Cursor cursor = getActivity().getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI,
+                projection,
+                movie_id,
+                null,
+                null
+        );
+        if(cursor.moveToFirst()){
+            Log.e(LOG_TAG,"Results came back, getColumnName>>>" +  cursor.getString(0));
+            return true;
+        } else {
+            Log.e(LOG_TAG,"no Results :/");
+            return false;
+        }
     }
 
     @Override

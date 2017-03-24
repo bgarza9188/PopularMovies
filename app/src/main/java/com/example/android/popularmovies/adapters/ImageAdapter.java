@@ -22,6 +22,8 @@ public class ImageAdapter extends BaseAdapter {
     private Context mContext;
     private final String LOG_TAG = ImageAdapter.class.getSimpleName();
 
+    protected final static String BASE_POSTER_IMAGE_URL = "http://image.tmdb.org/t/p/w500";
+
     protected List<String> movieInputs;
 
     public ImageAdapter(Context c) {
@@ -55,9 +57,8 @@ public class ImageAdapter extends BaseAdapter {
             imageView = (ImageView) convertView;
         }
 
-        String defaultImageUri = "http://image.tmdb.org/t/p/w500";
-        defaultImageUri += getMoviePosterURL(movieInputs.get(position));
-        Picasso.with(mContext).load(defaultImageUri).into(imageView);
+        String moviePosterURL = BASE_POSTER_IMAGE_URL + getMoviePosterURL(movieInputs.get(position));
+        Picasso.with(mContext).load(moviePosterURL).into(imageView);
         return imageView;
     }
 

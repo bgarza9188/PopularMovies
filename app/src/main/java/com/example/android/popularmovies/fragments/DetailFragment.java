@@ -34,6 +34,7 @@ public class DetailFragment extends Fragment implements OnTaskCompleted {
     private MovieDetailAdapter mMovieDetailAdapter;
     private Intent intent;
     private String mMovieID;
+    private Boolean mIsFavorite = false;
 
     public DetailFragment() {
         setHasOptionsMenu(true);
@@ -59,7 +60,6 @@ public class DetailFragment extends Fragment implements OnTaskCompleted {
         movieDetailListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
-                //TODO NEED TO FIGURE OUT HOW TO MAKE ONLY THE VIDEOS TRIGGER YOUTUBE
                 Log.i(LOG_TAG, "position:" + String.valueOf(position));
                 String key = mMovieDetailAdapter.getItem(position).toString();
                 String[] keyArray;
@@ -80,8 +80,12 @@ public class DetailFragment extends Fragment implements OnTaskCompleted {
         super.onStart();
         // The detail Activity called via intent.
         intent = getActivity().getIntent();
-        if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
+        if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)
+                && intent.hasExtra("favorite_flag")) {
             mMovieStr = intent.getStringExtra(Intent.EXTRA_TEXT);
+            if(intent.getStringExtra("favorite_flag").equalsIgnoreCase("true")) {
+                mIsFavorite = true;
+            }
             try {
                 JSONObject movieJson = new JSONObject(mMovieStr);
                 mMovieID = movieJson.getString("id");
@@ -90,7 +94,7 @@ public class DetailFragment extends Fragment implements OnTaskCompleted {
             }
         }
         mMovieDetailAdapter.clear();
-        mMovieDetailAdapter.add(0, mMovieStr);
+        mMovieDetailAdapter.add(0, mMovieStr, mIsFavorite);
         getVideos(mMovieID);
         getReviews(mMovieID);
     }
@@ -126,9 +130,7 @@ public class DetailFragment extends Fragment implements OnTaskCompleted {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        Log.e(LOG_TAG, "adapter getCount():" + position);
-
-                        mMovieDetailAdapter.add(position, "Author: " + author +  "\n" + "Review:\n" + reviewText);
+                        mMovieDetailAdapter.add(position, "Author: " + author +  "\n" + "Review:\n" + reviewText, false);
                         position++;
                     }
                     mMovieDetailAdapter.notifyDataSetChanged();
@@ -150,8 +152,7 @@ public class DetailFragment extends Fragment implements OnTaskCompleted {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        Log.e(LOG_TAG, "video pos:" + i);
-                        mMovieDetailAdapter.add(i, "trailer," + key + ",name," + trailerName);
+                        mMovieDetailAdapter.add(i, "trailer," + key + ",name," + trailerName, false);
                         mMovieDetailAdapter.notifyDataSetChanged();
                     }
                 } else {

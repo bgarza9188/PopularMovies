@@ -29,21 +29,6 @@ public class MovieProvider extends ContentProvider {
         sFavoriteMovieQueryBuilder.setTables(MovieContract.MovieEntry.TABLE_NAME);
     }
 
-    private Cursor getFavoriteMovie(Uri uri, String[] projection, String sortOrder) {
-
-        String[] selectionArgs = null;
-        String selection = null;
-
-        return sFavoriteMovieQueryBuilder.query(mOpenHelper.getReadableDatabase(),
-                projection,
-                selection,
-                selectionArgs,
-                null,
-                null,
-                sortOrder
-        );
-    }
-
     @Override
     public boolean onCreate() {
         Log.e(LOG_TAG, "onCreate");

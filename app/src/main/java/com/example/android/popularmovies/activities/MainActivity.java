@@ -7,11 +7,9 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.android.popularmovies.R;
-import com.example.android.popularmovies.fragments.FavoriteFragment;
 import com.example.android.popularmovies.fragments.MovieFragment;
-import com.example.android.popularmovies.fragments.dummy.DummyContent;
 
-public class MainActivity extends AppCompatActivity implements FavoriteFragment.OnListFragmentInteractionListener{
+public class MainActivity extends AppCompatActivity {
 
     private final String LOG_TAG = MainActivity.class.getSimpleName();
 
@@ -30,10 +28,5 @@ public class MainActivity extends AppCompatActivity implements FavoriteFragment.
             Toast.makeText(this, R.string.toast_onStart_guide,
                     Toast.LENGTH_LONG).show();
         }
-    }
-
-    @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem item) {
-
     }
 }
