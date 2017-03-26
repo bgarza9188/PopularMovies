@@ -67,7 +67,9 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
-                Log.e(LOG_TAG, "movie clicked:" + mCursorAdapter.getCursor().getString(COL_MOVIE_STRING));
+                if(getActivity().getClass().getName().contains("DetailActivity")){
+                    getActivity().finish();
+                }
                 Intent intent = new Intent(getActivity(), DetailActivity.class)
                         .putExtra(Intent.EXTRA_TEXT, mCursorAdapter.getCursor().getString(COL_MOVIE_STRING))
                         .putExtra("favorite_flag", "true");

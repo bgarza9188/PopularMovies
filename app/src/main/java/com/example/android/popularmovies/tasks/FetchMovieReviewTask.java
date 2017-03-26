@@ -82,7 +82,6 @@ public class FetchMovieReviewTask extends AsyncTask<String, Void, String[]> {
                     .appendPath("reviews")
                     .appendQueryParameter(APPID_PARAM, BuildConfig.POPULAR_MOVIE_API_KEY)
                     .build();
-            Log.i("built URI", builtUri.toString());
             URL url = new URL(builtUri.toString());
 
             // Create the request to OpenWeatherMap, and open the connection

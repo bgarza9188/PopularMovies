@@ -1,6 +1,7 @@
 package com.example.android.popularmovies.fragments;
 
 import android.content.Intent;
+import android.graphics.Movie;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -35,6 +37,8 @@ public class DetailFragment extends Fragment implements OnTaskCompleted {
     private Intent intent;
     private String mMovieID;
     private Boolean mIsFavorite = false;
+    public static final String DETAIL_TAG = "detail";
+
 
     public DetailFragment() {
         setHasOptionsMenu(true);
@@ -45,6 +49,30 @@ public class DetailFragment extends Fragment implements OnTaskCompleted {
         // Inflate the menu; this adds items to the action bar if it is present.
         inflater.inflate(R.menu.menu_favorites, menu);
         Log.i(LOG_TAG, "onCreateOptionsMenu");
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        Log.e(LOG_TAG, "onOptionsItemSelected");
+        int id = item.getItemId();
+        if (id == R.id.action_show_favorites) {
+            Toast.makeText(getActivity(), R.string.loading_favorites,
+                    Toast.LENGTH_SHORT).show();
+            if(getActivity().getSupportFragmentManager().findFragmentByTag(MovieFragment.FAVORITE_TAG) == null){
+                FavoriteFragment favoriteFragment = new FavoriteFragment();
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .add(R.id.content_main, favoriteFragment, MovieFragment.FAVORITE_TAG)
+                        .commit();
+            }
+            mMovieDetailAdapter.clear();
+            mMovieDetailAdapter.notifyDataSetChanged();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -60,7 +88,6 @@ public class DetailFragment extends Fragment implements OnTaskCompleted {
         movieDetailListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
-                Log.i(LOG_TAG, "position:" + String.valueOf(position));
                 String key = mMovieDetailAdapter.getItem(position).toString();
                 String[] keyArray;
                 //starts up youtube for given trailer click.
@@ -76,8 +103,13 @@ public class DetailFragment extends Fragment implements OnTaskCompleted {
 
     @Override
     public void onStart(){
-        Log.e(LOG_TAG, "onStart");
+        Log.i(LOG_TAG, "onStart");
         super.onStart();
+        if(getActivity().getSupportFragmentManager().findFragmentByTag(MovieFragment.FAVORITE_TAG) != null) {
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .remove(getActivity().getSupportFragmentManager().findFragmentByTag(MovieFragment.FAVORITE_TAG))
+                    .commit();
+        }
         // The detail Activity called via intent.
         intent = getActivity().getIntent();
         if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)
@@ -113,7 +145,7 @@ public class DetailFragment extends Fragment implements OnTaskCompleted {
 
     @Override
     public void onTaskCompleted(String[] result) {
-        Log.e(LOG_TAG, "onTaskCompleted");
+        Log.i(LOG_TAG, "onTaskCompleted");
         if(result != null) {
             if (result[0].equalsIgnoreCase("review")) {
                 //Pull Reviews

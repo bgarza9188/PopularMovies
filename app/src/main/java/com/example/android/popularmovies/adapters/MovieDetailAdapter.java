@@ -93,36 +93,43 @@ public class MovieDetailAdapter extends BaseAdapter {
         if(position == 0){
             viewHolder.movieTitleView.setText(title);
             viewHolder.releaseDateView.setText(releaseDate);
-            viewHolder.voteAverageView.setText(voteAverage + "/10");
+            voteAverage = voteAverage + R.string.out_of_10_rating;
+            viewHolder.voteAverageView.setText(voteAverage);
             viewHolder.plotView.setText(plot);
             ImageAdapter imageAdapter = new ImageAdapter(mContext);
             String moviePosterURL = ImageAdapter.BASE_POSTER_IMAGE_URL + imageAdapter.getMoviePosterURL(mMovieStr);
             Picasso.with(mContext).load(moviePosterURL).into(viewHolder.imageView);
             if(favoriteFlag){
-                viewHolder.favoriteButton.setText("Unmark as Favorite.");
+                viewHolder.favoriteButton.setText(R.string.unmark_favorite_button);
             } else {
-                viewHolder.favoriteButton.setText("Mark as Favorite.");
+                viewHolder.favoriteButton.setText(R.string.mark_favorite_button);
             }
             viewHolder.favoriteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                viewHolder.favoriteButton.setText("Marked as Favorite");
-                Toast.makeText(mContext, R.string.marked_as_favorite,
-                        Toast.LENGTH_SHORT).show();
-                ContentValues contentValues = new ContentValues();
-                contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, movie_id);
-                contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_STRING, mMovieStr);
-                mContext.getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI,contentValues);
-                mContext.getContentResolver().notifyChange(MovieContract.MovieEntry.CONTENT_URI, null);
+                    if(favoriteFlag) {
+                        favoriteFlag = false;
+                        viewHolder.favoriteButton.setText(R.string.mark_favorite_button);
+                        mContext.getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI, "movie_id = " + movie_id, null);
+                    } else {
+                        favoriteFlag = true;
+                        viewHolder.favoriteButton.setText(R.string.unmark_favorite_button);
+                        Toast.makeText(mContext, R.string.marked_as_favorite,
+                                Toast.LENGTH_SHORT).show();
+                        ContentValues contentValues = new ContentValues();
+                        contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, movie_id);
+                        contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_STRING, mMovieStr);
+                        mContext.getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI,contentValues);
+                    }
                 }
             });
         } else {
-            if(movieInputs.get(position).toString().contains("trailer")) {
+            if(movieInputs.get(position).contains("trailer")) {
                 String[] keyArray;
-                keyArray = movieInputs.get(position).toString().split(",");
+                keyArray = movieInputs.get(position).split(",");
                 viewHolder.listItemView.setText(keyArray[3]);
             } else {
-                viewHolder.listItemView.setText(movieInputs.get(position).toString());
+                viewHolder.listItemView.setText(movieInputs.get(position));
             }
         }
         return view;
