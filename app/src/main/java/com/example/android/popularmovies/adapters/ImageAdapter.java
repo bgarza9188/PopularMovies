@@ -22,7 +22,7 @@ public class ImageAdapter extends BaseAdapter {
     private Context mContext;
     private final String LOG_TAG = ImageAdapter.class.getSimpleName();
 
-    protected final static String BASE_POSTER_IMAGE_URL = "http://image.tmdb.org/t/p/w500";
+    protected static final String BASE_POSTER_IMAGE_URL = "http://image.tmdb.org/t/p/w500";
 
     protected List<String> movieInputs;
 
@@ -65,8 +65,7 @@ public class ImageAdapter extends BaseAdapter {
     public String getMoviePosterURL(String movie) {
         try {
             JSONObject movieJson = new JSONObject(movie);
-            String poster = movieJson.getString("poster_path");
-            return poster;
+            return movieJson.getString("poster_path");
         } catch (JSONException e) {
             e.printStackTrace();
         }

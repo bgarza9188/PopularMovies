@@ -14,6 +14,6 @@
     <string name="marked_as_favorite">Marked as favorite!</string>
     <string name="mark_favorite_button">Mark as favorite</string>
     <string name="unmark_favorite_button">Unmark as favorite</string>
-    <string name="out_of_10_rating">/10</string>
-
+    <string name="out_of_10_rating">%1$s"/10"</string>
+    <string name="no_favorites">You have no favorites yet, select a movie from the previous list and mark as favorite!</string>
 </resources>

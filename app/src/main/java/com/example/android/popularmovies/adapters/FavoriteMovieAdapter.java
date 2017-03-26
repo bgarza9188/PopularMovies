@@ -15,6 +15,8 @@ import com.squareup.picasso.Picasso;
  */
 
 public class FavoriteMovieAdapter extends CursorAdapter {
+    private final String LOG_TAG = FavoriteMovieAdapter.class.getSimpleName();
+
     public FavoriteMovieAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
     }

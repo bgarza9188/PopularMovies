@@ -93,8 +93,7 @@ public class MovieDetailAdapter extends BaseAdapter {
         if(position == 0){
             viewHolder.movieTitleView.setText(title);
             viewHolder.releaseDateView.setText(releaseDate);
-            voteAverage = voteAverage + R.string.out_of_10_rating;
-            viewHolder.voteAverageView.setText(voteAverage);
+            viewHolder.voteAverageView.setText(String.format(mContext.getResources().getString(R.string.out_of_10_rating), voteAverage));
             viewHolder.plotView.setText(plot);
             ImageAdapter imageAdapter = new ImageAdapter(mContext);
             String moviePosterURL = ImageAdapter.BASE_POSTER_IMAGE_URL + imageAdapter.getMoviePosterURL(mMovieStr);

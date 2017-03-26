@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.activities.DetailActivity;
@@ -81,12 +82,14 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        Log.i(LOG_TAG, "onActivityCreated");
         getLoaderManager().initLoader(FAVORITE_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Log.i(LOG_TAG, "onCreateLoader");
         return new CursorLoader(getActivity(),
                 MovieContract.MovieEntry.CONTENT_URI,
                 MOVIE_COLUMNS,
@@ -97,8 +100,12 @@ public class FavoriteFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        Log.i(LOG_TAG, "onLoadFinished");
+        if(cursor.getCount() == 0){
+            Toast.makeText(getActivity(), R.string.no_favorites,
+                    Toast.LENGTH_LONG).show();
+        }
         mCursorAdapter.swapCursor(cursor);
-
     }
 
     @Override

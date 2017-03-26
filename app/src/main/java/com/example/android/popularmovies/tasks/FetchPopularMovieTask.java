@@ -126,7 +126,6 @@ public class FetchPopularMovieTask extends AsyncTask<String, Void, String[]> {
         }
 
         try {
-            Log.i(LOG_TAG, movieJsonStr);
             return getMovieDataFromJson(movieJsonStr);
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);

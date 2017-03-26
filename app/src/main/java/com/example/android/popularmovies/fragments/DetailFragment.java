@@ -1,7 +1,6 @@
 package com.example.android.popularmovies.fragments;
 
 import android.content.Intent;
-import android.graphics.Movie;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -56,7 +55,7 @@ public class DetailFragment extends Fragment implements OnTaskCompleted {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        Log.e(LOG_TAG, "onOptionsItemSelected");
+        Log.i(LOG_TAG, "onOptionsItemSelected");
         int id = item.getItemId();
         if (id == R.id.action_show_favorites) {
             Toast.makeText(getActivity(), R.string.loading_favorites,

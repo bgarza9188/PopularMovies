@@ -31,7 +31,7 @@ public class MovieProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        Log.e(LOG_TAG, "onCreate");
+        Log.i(LOG_TAG, "onCreate");
         mOpenHelper = new MovieDbHelper(getContext());
         return true;
     }

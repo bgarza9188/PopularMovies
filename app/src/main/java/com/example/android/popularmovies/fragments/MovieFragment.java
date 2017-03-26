@@ -34,7 +34,7 @@ public class MovieFragment extends Fragment implements OnTaskCompleted {
     private final String TOP_RATED = "top_rated";
     private final String MOST_POP = "popular";
     public static final String FAVORITE_TAG = "favorite";
-    private String mLastSelection;
+    private String mLastSelection = "";
 
     public MovieFragment() {
         // Required empty public constructor
@@ -91,7 +91,7 @@ public class MovieFragment extends Fragment implements OnTaskCompleted {
     public void onStart() {
         super.onStart();
         Log.i(LOG_TAG, "onStart");
-        if (mLastSelection.equals(null) || mLastSelection.equals(MOST_POP)) {
+        if (mLastSelection.equalsIgnoreCase("") || mLastSelection.equalsIgnoreCase(MOST_POP)) {
             //When the app first launches, mLastSelection will be null.
             Toast.makeText(getActivity(), R.string.loading_most_popular,
                     Toast.LENGTH_SHORT).show();
@@ -120,7 +120,6 @@ public class MovieFragment extends Fragment implements OnTaskCompleted {
         int id = item.getItemId();
 
         if (id == R.id.action_sort_highest_rated) {
-            Log.i(LOG_TAG, "top rated was pressed");
             mLastSelection = TOP_RATED;
             Toast.makeText(getActivity(), R.string.loading_highest_rated,
                     Toast.LENGTH_SHORT).show();
@@ -133,7 +132,6 @@ public class MovieFragment extends Fragment implements OnTaskCompleted {
             updateMovies(TOP_RATED);
             return true;
         } else if (id == R.id.action_sort_most_popular) {
-            Log.i(LOG_TAG, "most pop was pressed");
             mLastSelection = MOST_POP;
             Toast.makeText(getActivity(), R.string.loading_most_popular,
                     Toast.LENGTH_SHORT).show();
@@ -166,19 +164,12 @@ public class MovieFragment extends Fragment implements OnTaskCompleted {
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState){
+        Log.i(LOG_TAG,"onSaveInstanceState");
         savedInstanceState.putString(VIEW_STATE_KEY, mLastSelection);
         super.onSaveInstanceState(savedInstanceState);
-        Log.e(LOG_TAG,"onSaveInstanceState");
-    }
-
-    @Override
-    public void onStop(){
-        super.onStop();
-        Log.e(LOG_TAG,"onStop");
     }
 
     public Boolean getFavoriteMovie(String movieStringToCheck) {
-
         String[] projection = {MovieContract.MovieEntry.COLUMN_MOVIE_ID};
         String movie_id = "";
 
@@ -196,21 +187,19 @@ public class MovieFragment extends Fragment implements OnTaskCompleted {
                 null
         );
 
-        if(cursor.moveToFirst()){
+        if(cursor != null && cursor.getCount() > 0){
             cursor.close();
             return true;
-        } else {
+        } else if(cursor != null){
             cursor.close();
-            Log.e(LOG_TAG,"no Results :/");
-            return false;
         }
+        return false;
     }
 
     @Override
     public void onTaskCompleted(String[] result) {
         if (result != null) {
             mMovieAdapter.clear();
-            Log.i(LOG_TAG, "Updating Adapter");
             for(int i = 0; i < result.length; i++){
                 mMovieAdapter.add(i, result[i]);
             }
